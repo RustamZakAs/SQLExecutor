@@ -37,7 +37,7 @@ namespace SQLExecutor
                     connection.Open();
                     using (SqlTransaction transaction = connection.BeginTransaction())
                     {
-                        var result = connection.Execute(sql, null, transaction);
+                        var result = connection.Execute(sql, null, transaction, 0);
                         _ = LogRegistrator.WriteToLogFileAsync("Result: '" + result + "'");
                     }
                 }
