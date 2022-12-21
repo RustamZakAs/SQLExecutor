@@ -39,6 +39,7 @@ namespace SQLExecutor
                     {
                         var result = connection.Execute(sql, null, transaction, 0);
                         _ = LogRegistrator.WriteToLogFileAsync("Result: '" + result + "'");
+                        transaction.Commit();
                     }
                 }
                 _ = LogRegistrator.WriteToLogFileAsync("Ended");
