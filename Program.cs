@@ -50,7 +50,6 @@ namespace SQLExecutor
                 return;
                 throw;
             }
-            
         }
     }
 }
