@@ -37,7 +37,6 @@
   <ItemGroup>
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
