@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Dapper;
@@ -12,10 +13,13 @@ namespace SQLExecutor
     {
         private static LocalParam LocalParams { get; set; } = new LocalParam();
         private static string ParamsPath { get; set; } = "Params.json";
+        private static Stopwatch stopwatch { get; set; } = new Stopwatch();
         static void Main(string[] args)
         {
             try
             {
+                stopwatch.Start();
+
                 _ = LogRegistrator.WriteToLogFileAsync("Started");
                 if (!System.IO.File.Exists(ParamsPath))
                 {
@@ -49,6 +53,25 @@ namespace SQLExecutor
                 _ = LogRegistrator.WriteToLogFileAsync("Ended" + " | " + ex?.Message + " | " + ex?.InnerException?.Message, Status.Error);
                 return;
                 throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
+                _ = LogRegistrator.WriteToLogFileAsync($"Job time is { stopwatch.Elapsed.ToString() }");
+                if ((LocalParams.SendEmailReportIfError && LogRegistrator.LogContexts.Count(x => x.status == Status.Error) > 0)
+                 || (LocalParams.SendEmailReportIfWarning && LogRegistrator.LogContexts.Count(x => x.status == Status.Warning) > 0)
+                 || (LocalParams.SendEmailReportIfInfo && LogRegistrator.LogContexts.Count(x => x.status == Status.Info) > 0))
+                {
+                    try
+                    {
+                        new ReportEmailSender(LocalParams.EmailSettings).Send(LogRegistrator.LogContexts);
+                        _ = LogRegistrator.WriteToLogFileAsync("Mail sended");
+                    }
+                    catch (Exception)
+                    {
+                        _ = LogRegistrator.WriteToLogFileAsync("Mail send error", Status.Error);
+                    }
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ namespace SQLExecutor
     public class LogRegistrator
     {
         private static string _logFilePath { get; set; } = "Log.txt";
-        private static List<LogContext> LogContexts { get; set; } = new List<LogContext>();
+        public static List<LogContext> LogContexts { get; set; } = new List<LogContext>();
 
         public static async Task WriteToLogFileAsync(string text, Status status = Status.Info)
         {
@@ -35,7 +35,7 @@ namespace SQLExecutor
 
         public override string ToString()
         {
-            return context;
+            return status.ToString() + ": " + context;
         }
     }
 
