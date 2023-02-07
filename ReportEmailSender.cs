@@ -22,7 +22,7 @@ namespace SQLExecutor
         {
             if (contexts == null) contexts = new List<LogContext>();
 
-            string subject = $@"TradeIntellect CashRegister DataGetter Hesabat {DateTime.Now.ToString("dd.MM.yyyy HH:mm")}";
+            string subject = $@"Job report {DateTime.Now.ToString("dd.MM.yyyy HH:mm")}";
             string htmlMessage = @"
 <!DOCTYPE html>
 <html>
