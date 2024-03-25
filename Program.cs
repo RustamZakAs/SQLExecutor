@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
@@ -33,13 +34,22 @@ namespace SQLExecutor
                     LocalParams = JsonConvert.DeserializeObject<LocalParam>(json);
                 }
 
-                SqlConnection sqlConnection = DBSQLServerUtils.GetDBConnection(LocalParams.DataSource, LocalParams.Database, LocalParams.Login, LocalParams.Password, LocalParams.Timeout);
+                DbConnection dbConnection;
+                if (LocalParams.DataType.ToUpper() == "MYSQL")
+                {
+                    dbConnection = DBSQLServerUtils.GetMySqlConnection(LocalParams.DataSource, LocalParams.Port, LocalParams.Database, LocalParams.Login, LocalParams.Password, LocalParams.Timeout);
+                }
+                else
+                {
+                    dbConnection = DBSQLServerUtils.GetSqlConnection(LocalParams.DataSource, LocalParams.Port, LocalParams.Database, LocalParams.Login, LocalParams.Password, LocalParams.Timeout);
+                }
+                SqlConnection sqlConnection = DBSQLServerUtils.GetSqlConnection(LocalParams.DataSource, LocalParams.Port, LocalParams.Database, LocalParams.Login, LocalParams.Password, LocalParams.Timeout);
                 string sql = System.IO.File.ReadAllText(LocalParams.QueryPath);
 
-                using (SqlConnection connection = new SqlConnection(sqlConnection.ConnectionString))
+                using (DbConnection connection = new SqlConnection(sqlConnection.ConnectionString))
                 {
                     connection.Open();
-                    using (SqlTransaction transaction = connection.BeginTransaction())
+                    using (DbTransaction transaction = connection.BeginTransaction())
                     {
                         var result = connection.Execute(sql, null, transaction, 0);
                         _ = LogRegistrator.WriteToLogFileAsync("Result: '" + result + "'");

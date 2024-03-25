@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -9,14 +10,31 @@ namespace SQLExecutor
 {
     public class DBSQLServerUtils
     {
-        public static SqlConnection GetDBConnection(string datasource, string database, string username, string password, int timeout)
+        public static SqlConnection GetSqlConnection(string datasource, int port, string database, string username, string password, int timeout)
         {
-            string connString = @"Data Source=" + datasource + ";Initial Catalog="
-                        + database + ";Connection Timeout=" + timeout + ";Persist Security Info=True;Pooling=False;User ID=" 
-                        + username + ";Password=" + password;
+            string connString = $@"Data Source={datasource},{port};
+                                   Initial Catalog={database};
+                                   Connection Timeout={timeout};
+                                   Persist Security Info=True;
+                                   Pooling=True;
+                                   User ID={username};
+                                   Password={password}";
 
-            SqlConnection conn = new SqlConnection(connString);
-            return conn;
+            return new SqlConnection(connString);
+        }
+
+        public static MySqlConnection GetMySqlConnection(string datasource, int port, string database, string username, string password, int timeout)
+        {
+            string connString = $@"Server={datasource};
+                                   Port={port};
+                                   Database={database};
+                                   Pooling=True;
+                                   Convert zero datetime=True;
+                                   Uid={username};
+                                   Pwd={password}
+                                   Connection Timeout={timeout};";
+
+            return new MySqlConnection(connString);
         }
     }
 }
