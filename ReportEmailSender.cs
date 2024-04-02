@@ -79,15 +79,10 @@ namespace SQLExecutor
                 message.Sender = new System.Net.Mail.MailAddress(_emailSettings.MailSender, _emailSettings.MailSenderName);
                 if (recipients != null && recipients.Length > 0)
                     foreach (string item in recipients)
-                    {
                         message.To.Add(new System.Net.Mail.MailAddress(item));
-
-                    }
                 if (attachments != null && attachments.Length > 0)
                     foreach (string item in attachments)
-                    {
                         message.Attachments.Add(new System.Net.Mail.Attachment(item));
-                    }
                 message.Subject = subject;
                 message.IsBodyHtml = true; //to make message body as html
                 message.Body = htmlMessage;
