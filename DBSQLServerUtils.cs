@@ -12,7 +12,8 @@ namespace SQLExecutor
     {
         public static SqlConnection GetSqlConnection(string datasource, int port, string database, string username, string password, int timeout)
         {
-            string connString = $@"Data Source={datasource},{port};
+            string connString = $@"Application Name={"SQL Executor"};
+                                   Data Source={datasource},{port};
                                    Initial Catalog={database};
                                    Connection Timeout={timeout};
                                    Persist Security Info=True;
