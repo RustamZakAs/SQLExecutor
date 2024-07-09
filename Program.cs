@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Dapper;
 using Newtonsoft.Json;
 
@@ -72,6 +73,8 @@ namespace SQLExecutor
                  || (LocalParams.SendEmailReportIfWarning && LogRegistrator.LogContexts.Count(x => x.status == Status.Warning) > 0)
                  || (LocalParams.SendEmailReportIfInfo && LogRegistrator.LogContexts.Count(x => x.status == Status.Info) > 0))
                 {
+                    int SendMailErrorCount = 0;
+                    ReplaySendLog:
                     try
                     {
                         new ReportEmailSender(LocalParams.EmailSettings).Send(LogRegistrator.LogContexts);
@@ -79,7 +82,10 @@ namespace SQLExecutor
                     }
                     catch (Exception)
                     {
-                        _ = LogRegistrator.WriteToLogFileAsync("Mail send error", Status.Error);
+                        _ = LogRegistrator.WriteToLogFileAsync($"Mail send error {++SendMailErrorCount}", Status.Error);
+                        Thread.Sleep(5000);
+                        if (SendMailErrorCount <= 5)
+                            goto ReplaySendLog;
                     }
                 }
             }
