@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using Dapper;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Utilities;
 
 namespace SQLExecutor
 {
@@ -44,19 +47,27 @@ namespace SQLExecutor
                 {
                     dbConnection = DBSQLServerUtils.GetSqlConnection(LocalParams.DataSource, LocalParams.Port, LocalParams.Database, LocalParams.Login, LocalParams.Password, LocalParams.Timeout);
                 }
-                SqlConnection sqlConnection = DBSQLServerUtils.GetSqlConnection(LocalParams.DataSource, LocalParams.Port, LocalParams.Database, LocalParams.Login, LocalParams.Password, LocalParams.Timeout);
-                string sql = System.IO.File.ReadAllText(LocalParams.QueryPath);
-
-                using (DbConnection connection = new SqlConnection(sqlConnection.ConnectionString))
+                if (!System.IO.File.Exists(LocalParams.QueryPath))
                 {
-                    connection.Open();
-                    using (DbTransaction transaction = connection.BeginTransaction())
+                    using (var fs = new FileStream(LocalParams.QueryPath, FileMode.Create, FileAccess.ReadWrite))
                     {
-                        var result = connection.Execute(sql, null, transaction, 0);
-                        _ = LogRegistrator.WriteToLogFileAsync("Result: '" + result + "'");
-                        transaction.Commit();
+                        using (TextWriter tw = new StreamWriter(fs))
+                        {
+                            tw.Write("");
+                            tw.Flush();
+                        }
                     }
                 }
+                string sql = System.IO.File.ReadAllText(LocalParams.QueryPath);
+
+                dbConnection.Open();
+                using (DbTransaction transaction = dbConnection.BeginTransaction())
+                {
+                    var result = dbConnection.Execute(sql, null, transaction, 0);
+                    _ = LogRegistrator.WriteToLogFileAsync("Result: '" + result + "'");
+                    transaction.Commit();
+                }
+                
                 _ = LogRegistrator.WriteToLogFileAsync("Ended");
             }
             catch (Exception ex)

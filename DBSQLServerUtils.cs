@@ -32,7 +32,7 @@ namespace SQLExecutor
                                    Pooling=True;
                                    Convert zero datetime=True;
                                    Uid={username};
-                                   Pwd={password}
+                                   Pwd={password};
                                    Connection Timeout={timeout};";
 
             return new MySqlConnection(connString);
