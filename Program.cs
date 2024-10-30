@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Dapper;
+using Newtonsoft.Json;
+using System;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using Dapper;
-using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Utilities;
 
 namespace SQLExecutor
 {
